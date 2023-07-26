@@ -3,3 +3,5 @@ Any projects I complete for the Udacity C++ Nanodegree Program will be stored he
 
 ## Projects
 1. [Route Planning Project](./BFS_path_finding/README.md): Part 2, Module 1, Lesson 3, Concept 5
+
+2. [A* Path Planning Project](./path_finder_using_A_star/README.md): Part 2, Module 1, Lesson 3, Concept 20
