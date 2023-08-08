@@ -14,13 +14,16 @@ public:
     };
     
     struct Way {
-        std::vector<int> nodes;
+        std::vector<int> nodes;     // the nodes attribute, which is a vector of node indices.
     };
     
     struct Road {
         enum Type { Invalid, Unclassified, Service, Residential,
             Tertiary, Secondary, Primary, Trunk, Motorway, Footway };
-        int way;
+        int way;    //  the way attribute, which is the index of the way that this road belongs to in the Ways() vector\
+                        e.g. the m_Ways vector. This means that for a given Road object road, you can find all the node\
+                        indices related to the road with Ways()[road.way].nodes.\
+                        
         Type type;
     };
     
