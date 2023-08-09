@@ -4,6 +4,11 @@
 RouteModel::RouteModel(const std::vector<std::byte> &xml) : Model(xml) {
     // create the routemodel nodes
     int counter = 0;
+    //  Here we are iterating through the nodes in the OSM data and creating new\
+        nodes for each one, linking them to this routemodel object, and adding\
+        them to m_Nodes and giving them an index like 0, 1, 2, 3, 4, 5, 6 etc.\
+        These indices are not having any meaning in the OSM data, but they are\
+        useful for us to be able to access the nodes in the m_Nodes vector.
     for (auto &node : this->Nodes()) {
         RouteModel::Node NewNode {Node(counter, this, node)};
         counter++;
@@ -23,4 +28,17 @@ void RouteModel::CreateNodeToRoadHashmap(){
             }
         }
     }
+}
+
+RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices) {
+    Node *closest_node = nullptr;
+    Node node;
+    for (int node_index : node_indices){
+        node = parent_model->SNodes()[node_index];
+        if (this->distance(node) != 0 && !node.visited)
+            if ( (closest_node == nullptr) || (this->distance(node) < this->distance(*closest_node)) )
+                closest_node = &parent_model->SNodes()[node_index];
+    }
+    
+    return closest_node;
 }
