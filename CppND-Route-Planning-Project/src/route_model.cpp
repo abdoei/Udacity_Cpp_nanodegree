@@ -18,6 +18,7 @@ RouteModel::RouteModel(const std::vector<std::byte> &xml) : Model(xml) {
     CreateNodeToRoadHashmap();
 }
 
+// RouteModel methods
 void RouteModel::CreateNodeToRoadHashmap(){
     for(auto &road: Roads()){
         if(road.type != Model::Road::Type::Footway){
@@ -30,6 +31,30 @@ void RouteModel::CreateNodeToRoadHashmap(){
     }
 }
 
+RouteModel::Node& RouteModel::FindClosestNode(float x, float y){
+    Node tmp;
+    tmp.x = x; tmp.y = y;
+    
+    auto min_dist = std::numeric_limits<float>::max();
+    float dist;
+    int closest_idx;
+
+    for(auto& road: Roads()){
+        if(road.type != Model::Road::Type::Footway){
+            for(auto node_idx : Ways()[road.way].nodes){
+                dist = tmp.distance(SNodes()[node_idx]);
+                if(dist < min_dist){
+                    min_dist = dist;
+                    closest_idx = node_idx;
+                }
+            }
+        }
+    }
+    return SNodes()[closest_idx];
+}
+
+
+// Node methods
 RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices) {
     Node *closest_node = nullptr;
     Node node;

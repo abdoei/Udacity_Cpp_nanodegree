@@ -38,6 +38,7 @@ class RouteModel : public Model {
     // methods
     auto GetNodeToRoadMap() -> std::unordered_map<int, std::vector<const Model::Road*>> & {return node_to_road;}
     std::vector<Node> &SNodes(){ return m_Nodes; }
+    RouteModel::Node& FindClosestNode(float x, float y);
 
   private:
     // Private RouteModel variables and methods
