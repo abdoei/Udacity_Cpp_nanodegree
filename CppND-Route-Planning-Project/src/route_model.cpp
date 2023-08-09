@@ -39,6 +39,13 @@ RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices) 
             if ( (closest_node == nullptr) || (this->distance(node) < this->distance(*closest_node)) )
                 closest_node = &parent_model->SNodes()[node_index];
     }
-    
     return closest_node;
+}
+
+void RouteModel::Node::FindNeighbors(){
+    for(auto road: parent_model->node_to_road[this->index]){
+        auto nearest = FindNeighbor(parent_model->Ways()[road->way].nodes);
+        if(nearest != nullptr) 
+            this->neighbors.emplace_back(nearest);
+    }
 }
