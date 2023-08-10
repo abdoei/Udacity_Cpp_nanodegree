@@ -14,7 +14,7 @@ public: // constructor
 
   // methods
   float GetDistance() const noexcept { return distance;}
-
+  void AStarSearch();
 private:
   // Private variables and method declarations
   RouteModel &m_Model;
