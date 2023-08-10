@@ -22,7 +22,7 @@ private:
   float distance; 
 
   //methods
-  
+  std::vector<RouteModel::Node> ConstructFinalPath(RouteModel::Node *current_node);
 };
 
 #endif
