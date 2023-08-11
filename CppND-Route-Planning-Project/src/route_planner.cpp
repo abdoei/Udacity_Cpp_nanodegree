@@ -35,3 +35,12 @@ void RoutePlanner::AStarSearch(){
 float RoutePlanner::CalculateHValue(RouteModel::Node* nodePtr){
     return nodePtr->distance(*end_node);
 }
+
+RouteModel::Node* RoutePlanner::NextNode(){
+    std::sort(open_list.begin(), open_list.end(), [](const RouteModel::Node* a, const RouteModel::Node* b){
+        return (a->h_value + a->g_value) < (b->h_value + b->g_value);
+    });
+    auto lowest_node = *open_list.begin();
+    open_list.erase(open_list.begin());
+    return lowest_node;
+}
