@@ -23,6 +23,7 @@ private:
 
   //methods
   std::vector<RouteModel::Node> ConstructFinalPath(RouteModel::Node *current_node);
+  float CalculateHValue(RouteModel::Node* nodePtr);
 };
 
 #endif
