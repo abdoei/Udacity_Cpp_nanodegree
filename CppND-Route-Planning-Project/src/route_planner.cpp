@@ -44,3 +44,15 @@ RouteModel::Node* RoutePlanner::NextNode(){
     open_list.erase(open_list.begin());
     return lowest_node;
 }
+
+void RoutePlanner::AddNeighbors(RouteModel::Node * current_node){
+    current_node->FindNeighbors();
+    auto neighbours = current_node->neighbors;
+    for(auto neighbour: neighbours){
+        neighbour->g_value += current_node->distance(*neighbour);
+        neighbour->h_value = CalculateHValue(current_node);
+        neighbour->parent = current_node;
+        open_list.emplace_back(neighbour);
+        neighbour->visited = true;
+    }
+}
