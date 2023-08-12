@@ -9,7 +9,7 @@ RouteModel::RouteModel(const std::vector<std::byte> &xml) : Model(xml) {
         them to m_Nodes and giving them an index like 0, 1, 2, 3, 4, 5, 6 etc.\
         These indices are not having any meaning in the OSM data, but they are\
         useful for us to be able to access the nodes in the m_Nodes vector.
-    for (auto &node : this->Nodes()) {
+    for (auto node : this->Nodes()) {
         RouteModel::Node NewNode {Node(counter, this, node)};
         counter++;
         m_Nodes.emplace_back(NewNode);
@@ -32,7 +32,7 @@ void RouteModel::CreateNodeToRoadHashmap(){
 }
 
 RouteModel::Node& RouteModel::FindClosestNode(float x, float y){
-    Node tmp;
+    Node tmp = Node();
     tmp.x = x; tmp.y = y;
     
     auto min_dist = std::numeric_limits<float>::max();
@@ -60,16 +60,17 @@ RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices) 
     Node node;
     for (int node_index : node_indices){
         node = parent_model->SNodes()[node_index];
-        if (this->distance(node) != 0 && !node.visited)
+        if (this->distance(node) != 0 && !node.visited){
             if ( (closest_node == nullptr) || (this->distance(node) < this->distance(*closest_node)) )
                 closest_node = &parent_model->SNodes()[node_index];
+        }
     }
     return closest_node;
 }
 
 void RouteModel::Node::FindNeighbors(){
-    for(auto road: parent_model->node_to_road[this->index]){
-        auto nearest = FindNeighbor(parent_model->Ways()[road->way].nodes);
+    for(auto &road: parent_model->node_to_road[this->index]){
+        auto nearest = this->FindNeighbor(parent_model->Ways()[road->way].nodes);
         if(nearest != nullptr) 
             this->neighbors.emplace_back(nearest);
     }

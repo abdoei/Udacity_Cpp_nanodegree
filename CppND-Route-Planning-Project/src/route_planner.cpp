@@ -15,7 +15,7 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 
 std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node *current_node){
     std::vector<RouteModel::Node> path_found;
-    distance = 0.0;
+    distance = 0.0f;
     while(current_node->parent != nullptr){
         path_found.push_back(*current_node);
         distance += current_node->distance(*current_node->parent);
@@ -58,8 +58,10 @@ void RoutePlanner::AddNeighbors(RouteModel::Node * current_node){
     current_node->FindNeighbors();
     auto neighbours = current_node->neighbors;
     for(auto neighbour: neighbours){
-        neighbour->g_value += current_node->distance(*neighbour);
-        neighbour->h_value = CalculateHValue(current_node);
+        // this line was fialing the test of the A* search and the distance and the numbere of nodes was worng and the A* search was not optimal due to this error in the heuristics function.
+        // neighbour->g_value += current_node->distance(*neighbour);
+        neighbour->g_value = current_node->g_value + current_node->distance(*neighbour);
+        neighbour->h_value = CalculateHValue(neighbour);
         neighbour->parent = current_node;
         open_list.emplace_back(neighbour);
         neighbour->visited = true;
