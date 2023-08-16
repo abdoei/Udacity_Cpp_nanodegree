@@ -57,8 +57,7 @@ class ProcessParser {
 string ProcessParser::getCmd(string pid){
     string cmdline;
     string path = Path::basePath() + pid + Path::cmdPath();
-    
-    std::ifstream stream(path);
+    std::ifstream stream = Util::getStream(path);
     std::getline(stream, cmdline);
 
     return cmdline;
@@ -84,4 +83,18 @@ vector<string> ProcessParser::getPidList(){
         throw std::runtime_error(std::strerror(errno));
 
     return pidList;
+}
+
+string ProcessParser::getVmSize(string pid){
+    string path = Path::basePath() + pid + Path::statusPath();
+    string searchString = "VmData:";
+    std::ifstream stream = Util::getStream(path);
+    string line;
+    while(getline(stream, line)){
+        if(line.compare(0, searchString.size(), searchString) == 0){
+            string strVmSize = line.substr(searchString.size(), line.size());
+            return std::to_string(std::stoi(strVmSize) / 1024.0 / 1024.0 );
+        }
+    }
+    return string("-1");
 }

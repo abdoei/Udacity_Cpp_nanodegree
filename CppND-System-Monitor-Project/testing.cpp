@@ -7,8 +7,8 @@ using namespace std;
 
 int main(){
     // constants.hpp
-    cout << Util::convertToTime(1000) << endl;
-    cout << Util::getProgressBar("50") << endl;
+    // cout << Util::convertToTime(1000) << endl;
+    // cout << Util::getProgressBar("50") << endl;
 
 /////////////////
     cout << '\n';
@@ -18,7 +18,7 @@ int main(){
     if (myfile)
     {
         string line;
-        while (getline(myfile, line)) cout << line << endl;
+        // while (getline(myfile, line)) cout << line << endl;
     }
 
 /////////////////
@@ -26,7 +26,7 @@ int main(){
 /////////////////
 
     // ProcessParser.hpp
-    cout << ProcessParser::getCmd("1660") << endl;
+    // cout << ProcessParser::getCmd("1660") << endl;
     // this happens to be valid [when running on my machine] and gives "/usr/libexec/gvfs-udisks2-volume-monitor"
 
 /////////////////
@@ -34,8 +34,14 @@ int main(){
 /////////////////
 
     vector<string> processes = ProcessParser::getPidList();
-    for (string proc : processes)
-        cout << proc << " | ";
-    
+    // for (string proc : processes)
+    //     cout << proc << " | ";
+
+/////////////////
+    cout << '\n';
+/////////////////
+    int pNum = 2144;
+    cout << "Process No. " << to_string(pNum) << " got a RAM usage of " << ProcessParser::getVmSize(to_string(pNum)) << " GBytes" << endl; 
+
     return 0;
 }
