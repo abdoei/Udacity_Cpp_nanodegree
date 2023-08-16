@@ -5,7 +5,7 @@
 #include <math.h>
 #include <thread>
 #include <chrono>
-#include <iterator>
+#include <iterator> //
 #include <string> //
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,7 +17,7 @@
 #include <cstring> //
 #include <dirent.h> //
 #include <time.h>
-#include <unistd.h>
+#include <unistd.h> //
 #include <constants.h> //
 */
 
@@ -31,9 +31,15 @@
 #include <cstring>
 #include <algorithm>
 #include <iostream>
+#include <iterator>
+#include <unistd.h>
 
 using std::string;
 using std::vector;
+using std::ifstream;
+using std::istringstream;
+using std::to_string;
+using std::istream_iterator;
 
 class ProcessParser {
     public:
@@ -92,9 +98,68 @@ string ProcessParser::getVmSize(string pid){
     string line;
     while(getline(stream, line)){
         if(line.compare(0, searchString.size(), searchString) == 0){
-            string strVmSize = line.substr(searchString.size(), line.size());
+            string strVmSize = line.substr(searchString.size(), line.size()); // redundant
             return std::to_string(std::stoi(strVmSize) / 1024.0 / 1024.0 );
         }
     }
     return string("-1");
+}
+
+string ProcessParser::getCpuPercent(string pid){
+    int sTime_i = 14, cuTime_i = 15, csTime_i = 16, startTime_i = 21;
+    ifstream stream = Util::getStream(Path::basePath() + pid + Path::statPath());
+    string line;
+    getline(stream, line);
+    istringstream buf(line);
+    std::istream_iterator<string> beg(buf), end;
+    vector<string> times (beg, end);
+    /*
+    utime: user mode jiffies
+    stime: kernel mode jiffies
+    cutime: user mode jiffies with child's
+    cstime: kernel mode jiffies with child's
+    start_time: time the process started after system boot
+    
+    jiffies: An incrementing counter representing
+    system "uptime" in ticks - or the number of 
+    timer interrupts since boot. Ultimately the
+    entire original concept of a jiffy will likely
+    vanish as systems use timer events only when
+    necessary and become "jiffyless". 
+    
+    */
+    float sTime = stof(times[sTime_i]);
+    float cuTime = stof(times[cuTime_i]);
+    float csTime = stof(times[csTime_i]);
+    float startTime = stof(times[startTime_i]);
+    float freq = sysconf(_SC_CLK_TCK);
+    // not imp
+    float uTime = stof(ProcessParser::getProcUpTime(pid));
+    float upTime = ProcessParser::getSysUpTime();
+
+    // calculations
+    float total_time = uTime + sTime + cuTime + csTime;
+    float seconds = upTime - (startTime / freq); // time elapsed from the begining of the process to now
+    float result = 100.0*((total_time / freq) / seconds);
+    return to_string(result);
+}
+
+string ProcessParser::getProcUpTime(string pid){
+    ifstream stream = Util::getStream(Path::basePath() + pid + Path::statPath());
+    string line;
+    getline(stream, line);
+    istringstream buf(line);
+    istream_iterator<string> beg(buf), end;
+    vector<string> stats(beg, end);
+    return to_string(stof(stats[13]) / sysconf(_SC_CLK_TCK));
+}
+
+long int ProcessParser::getSysUpTime(){
+    ifstream stream = Util::getStream(Path::basePath() + Path::upTimePath());
+    string line;
+    getline(stream, line);
+    istringstream buf(line);
+    istream_iterator<string> beg(buf), end;
+    vector<string> values (beg, end);
+    return stoi(values[0]);
 }

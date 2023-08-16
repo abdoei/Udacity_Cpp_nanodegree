@@ -41,7 +41,12 @@ int main(){
     cout << '\n';
 /////////////////
     int pNum = 2144;
-    cout << "Process No. " << to_string(pNum) << " got a RAM usage of " << ProcessParser::getVmSize(to_string(pNum)) << " GBytes" << endl; 
+    // cout << "Process No." << to_string(pNum) << " got a RAM usage of " << ProcessParser::getVmSize(to_string(pNum)) << " GBytes" << endl; 
 
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "Process No." << to_string(pNum) << " uses " << ProcessParser::getCpuPercent(to_string(pNum)) << "\% of the cpu power";
     return 0;
 }
