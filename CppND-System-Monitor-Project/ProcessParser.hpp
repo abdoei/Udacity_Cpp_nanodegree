@@ -163,3 +163,31 @@ long int ProcessParser::getSysUpTime(){
     vector<string> values (beg, end);
     return stoi(values[0]);
 }
+
+string ProcessParser::getProcUser(string pid){
+    string path = Path::basePath() + pid + Path::statusPath();
+    string searchString = "Uid:";
+    ifstream stream = Util::getStream(path);
+    string line;
+    string Uid;
+    while(getline(stream, line)){
+        if(line.compare(0, searchString.size(), searchString) == 0){
+            std::istringstream iss(line);
+            std::vector<std::string> words(std::istream_iterator<std::string>{iss},
+                                           std::istream_iterator<std::string>());
+            Uid = words[1];
+            break;
+        }
+    }
+    stream = Util::getStream("/etc/passwd");
+    searchString = ":x:" + Uid;
+    int firstColonPos;
+    while(getline(stream, line)){
+        if((firstColonPos = line.find(searchString)) != string::npos){
+            Uid = line.substr(0, firstColonPos);
+            break;
+        }
+    }
+
+    return Uid;
+}

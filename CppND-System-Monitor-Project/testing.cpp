@@ -47,6 +47,12 @@ int main(){
     cout << '\n';
 /////////////////
 
-    cout << "Process No." << to_string(pNum) << " uses " << ProcessParser::getCpuPercent(to_string(pNum)) << "\% of the cpu power";
+    // cout << "Process No." << to_string(pNum) << " uses " << ProcessParser::getCpuPercent(to_string(pNum)) << "\% of the cpu power";
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "Process No." << to_string(pNum) << " belongs to user: " << ProcessParser::getProcUser(to_string(pNum)) << endl;
     return 0;
 }
