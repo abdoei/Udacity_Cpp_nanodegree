@@ -114,7 +114,7 @@ string ProcessParser::getCpuPercent(string pid){
     string line;
     getline(stream, line);
     istringstream buf(line);
-    std::istream_iterator<string> beg(buf), end;
+    istream_iterator<string> beg(buf), end;
     vector<string> times (beg, end);
     /*
     utime: user mode jiffies
@@ -176,8 +176,8 @@ string ProcessParser::getProcUser(string pid){
     while(getline(stream, line)){
         if(line.compare(0, searchString.size(), searchString) == 0){
             std::istringstream iss(line);
-            std::vector<std::string> words(std::istream_iterator<std::string>{iss},
-                                           std::istream_iterator<std::string>());
+            std::vector<std::string> words(istream_iterator<std::string>{iss},
+                                           istream_iterator<std::string>());
             Uid = words[1];
             break;
         }
@@ -195,8 +195,7 @@ string ProcessParser::getProcUser(string pid){
     return Uid;
 }
 
-int ProcessParser::getNumberOfCores()
-{
+int ProcessParser::getNumberOfCores(){
     // Get the number of host cpu cores
     string line;
     string name = "cpu cores";
@@ -275,9 +274,83 @@ float ProcessParser::getSysRamPercent(){
     vector<string *> addresses {&MemAvailable, &MemFree, &Buffers}; 
     for (short i = 0; i < 3; ++i){
         istringstream iss(*addresses[i]);
-        vector<string> words(std::istream_iterator<string>{iss}, std::istream_iterator<string>());
+        vector<string> words(istream_iterator<string>{iss}, istream_iterator<string>());
         *addresses[i] = words[1];
     }
     float output = 100.0 * (1 - (stof(MemFree) / (stof(MemAvailable) - stof(Buffers))));
     return output;
+}
+
+string ProcessParser::getSysKernelVersion(){
+    string line;
+    string searchString = "Linux version ";
+    ifstream stream = Util::getStream((Path::basePath() + Path::versionPath()));
+    getline(stream, line);
+    istringstream buf(line);
+    vector<string> values(istream_iterator<string>{buf}, istream_iterator<string>());
+    return values[2];
+}
+
+string ProcessParser::getOsName(){
+    string line;
+    string searchString = "PRETTY_NAME=";
+    ifstream stream = Util::getStream(("/etc/os-release"));
+    while (getline(stream, line)) {
+        if(line.compare(0, searchString.size(), searchString) == 0) {
+            searchString = line.substr(line.find("\""), line.size());
+            break;
+        }
+    }
+    return searchString;
+}
+
+int ProcessParser::getTotalThreads() {
+    string line;
+    string searchString = "Threads:";
+    vector<string> pids = getPidList();
+    int threadsCounter = 0;
+    for(string pid: pids){
+        ifstream stream = Util::getStream(Path::basePath() + pid + Path::statusPath());
+        while(getline(stream, line)){
+            if (line.compare(0, searchString.size(), searchString) == 0) {
+                istringstream buf(line);
+                vector<string> values(istream_iterator<string>{buf}, istream_iterator<string>());
+                threadsCounter += stoi(values[1]);
+                break;
+            }
+        }
+    }
+    return threadsCounter;
+}
+
+int ProcessParser::getTotalNumberOfProcesses(){
+    string line;
+    int processesCounter = 0;
+    string searchString = "processes";
+    ifstream stream = Util::getStream((Path::basePath() + Path::statPath()));
+    while (std::getline(stream, line)) {
+        if (line.compare(0, searchString.size(), searchString) == 0) {
+            istringstream buf(line);
+            vector<string> values(istream_iterator<string>{buf}, istream_iterator<string>());
+            processesCounter += stoi(values[1]);
+            break;
+        }
+    }
+    return processesCounter;
+}
+
+int ProcessParser::getNumberOfRunningProcesses(){
+    string line;
+    int runningProcessesCounter = 0;
+    string searchString = "procs_running";
+    ifstream stream = Util::getStream((Path::basePath() + Path::statPath()));
+    while (std::getline(stream, line)) {
+        if (line.compare(0, searchString.size(), searchString) == 0) {
+            istringstream buf(line);
+            vector<string> values(istream_iterator<string>{buf}, istream_iterator<string>());
+            runningProcessesCounter += stoi(values[1]);
+            break;
+        }
+    }
+    return runningProcessesCounter;
 }

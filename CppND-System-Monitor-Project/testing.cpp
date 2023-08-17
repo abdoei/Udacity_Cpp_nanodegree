@@ -73,6 +73,37 @@ int main(){
     cout << '\n';
 /////////////////
 
-    cout << "System Ram %: " << ProcessParser::getSysRamPercent() << endl;
+    // cout << "System Ram %: " << ProcessParser::getSysRamPercent() << endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "System kernel version: " << ProcessParser::getSysKernelVersion() << endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "System name: " << ProcessParser::getOsName() << endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "Total threads number: " << ProcessParser::getTotalThreads() << endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "Total processes number: " << ProcessParser::getTotalNumberOfProcesses() << endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "Total running processes number: " << ProcessParser::getNumberOfRunningProcesses() << endl;
+
     return 0;
 }
