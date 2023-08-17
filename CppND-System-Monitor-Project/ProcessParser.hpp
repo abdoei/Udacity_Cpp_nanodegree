@@ -50,7 +50,7 @@ class ProcessParser {
         static long int getSysUpTime();
         static std::string getProcUpTime(std::string pid);
         static std::string getProcUser(std::string pid);
-        static std::vector<std::string> getSysCpuPercent(std::string coreNumber = "");
+        static std::vector<std::string> getSysCpuPercent(std::string coreNumber);
         static float getSysRamPercent();
         static std::string getSysKernelVersion();
         static int getTotalThreads();
@@ -58,6 +58,9 @@ class ProcessParser {
         static int getNumberOfRunningProcesses();
         static string getOsName();
         static std::string printCpuStats(std::vector<std::string> values1, std::vector<std::string>values2);
+        static int getNumberOfCores();
+        static float getSysActiveCpuTime(vector<string> values);
+        static float getSysIdleCpuTime(vector<string> values);
 };
 
 string ProcessParser::getCmd(string pid){
@@ -191,3 +194,56 @@ string ProcessParser::getProcUser(string pid){
 
     return Uid;
 }
+
+int ProcessParser::getNumberOfCores()
+{
+    // Get the number of host cpu cores
+    string line;
+    string name = "cpu cores";
+    ifstream stream = Util::getStream((Path::basePath() + "cpuinfo"));
+    while (std::getline(stream, line)) {
+        if (line.compare(0, name.size(),name) == 0) {
+            istringstream buf(line);
+            istream_iterator<string> beg(buf), end;
+            vector<string> values(beg, end);
+            return stoi(values[3]);
+        }
+    }
+    return 0;
+}
+
+vector<string> ProcessParser::getSysCpuPercent(std::string coreNumber){
+    string path = Path::basePath() + Path::statPath();
+    ifstream stream = Util::getStream(path);
+    string line;
+    string searchString = "cpu" + coreNumber;
+    
+    while (getline(stream, line))
+    {
+        if(line.compare(0, searchString.size(), searchString) == 0){
+            istringstream iss{line};
+            vector<string> data(++(istream_iterator<std::string>{iss}),
+                                istream_iterator<std::string>()); // skiping the first element
+            return data;
+        }
+    }
+    return vector<string>();
+}
+
+// Values 1:3, 6:10 are active CPU time 
+float ProcessParser::getSysActiveCpuTime(vector<string> values){
+    return (stof(values[S_USER])    +
+            stof(values[S_NICE])    +
+            stof(values[S_SYSTEM])  +
+            stof(values[S_IRQ])     +
+            stof(values[S_SOFTIRQ]) +
+            stof(values[S_STEAL])   +
+            stof(values[S_GUEST])   +
+            stof(values[S_GUEST_NICE]));
+}
+
+// Values 4, 5 are idle CPU time
+float ProcessParser::getSysIdleCpuTime(vector<string> values) {
+    return (stof(values[S_IDLE]) + stof(values[S_IOWAIT]));
+}
+

@@ -40,6 +40,7 @@ int main(){
 /////////////////
     cout << '\n';
 /////////////////
+
     int pNum = 2144;
     // cout << "Process No." << to_string(pNum) << " got a RAM usage of " << ProcessParser::getVmSize(to_string(pNum)) << " GBytes" << endl; 
 
@@ -53,6 +54,22 @@ int main(){
     cout << '\n';
 /////////////////
 
-    cout << "Process No." << to_string(pNum) << " belongs to user: " << ProcessParser::getProcUser(to_string(pNum)) << endl;
+    // cout << "Process No." << to_string(pNum) << " belongs to user: " << ProcessParser::getProcUser(to_string(pNum)) << endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    // cout << "No. of cores = " << ProcessParser::getNumberOfCores()<< endl;
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    for (auto& i : ProcessParser::getSysCpuPercent("0"))
+        cout << i << " | ";
+    
+    
+    
     return 0;
 }

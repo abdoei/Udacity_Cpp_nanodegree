@@ -1,5 +1,4 @@
 #pragma once 
-#include <string>
 
 using std::string;
 
@@ -12,4 +11,17 @@ public:
     static string upTimePath() {return "uptime";}
     static string memInfoPath() {return "meminfo";}
     static string versionPath() {return "version";}
+};
+
+enum CPUStates{
+    S_USER = 1,
+    S_NICE,
+    S_SYSTEM,
+    S_IDLE,
+    S_IOWAIT,
+    S_IRQ,
+    S_SOFTIRQ,
+    S_STEAL,
+    S_GUEST,
+    S_GUEST_NICE
 };
