@@ -247,7 +247,7 @@ float ProcessParser::getSysIdleCpuTime(vector<string> values) {
     return (stof(values[S_IDLE]) + stof(values[S_IOWAIT]));
 }
 
-
+// values1 and values2 are previous and current time. 
 string ProcessParser::printCpuStats(vector<string> values1, vector<string> values2){
 /*
 Because CPU stats can be calculated only if you take measures in two different time,
@@ -259,4 +259,25 @@ We use a formula to calculate overall activity of processor.
     float totalTime = activeTime + idleTime;
     float result = 100.0*(activeTime / totalTime);
     return to_string(result);
+}
+
+float ProcessParser::getSysRamPercent(){
+    string MemAvailable = "MemAvailable:";
+    string MemFree = "MemFree:";
+    string Buffers = "Buffers:";
+    string line;
+    ifstream stream = Util::getStream(Path::basePath() + Path::memInfoPath());
+    while (getline(stream, line)) {
+        if(line.compare(0, MemAvailable.size(), MemAvailable) == 0) MemAvailable = line;
+        else if(line.compare(0, MemFree.size(), MemFree) == 0)      MemFree = line;
+        else if(line.compare(0, Buffers.size(), Buffers) == 0)      Buffers = line;
+    }
+    vector<string *> addresses {&MemAvailable, &MemFree, &Buffers}; 
+    for (short i = 0; i < 3; ++i){
+        istringstream iss(*addresses[i]);
+        vector<string> words(std::istream_iterator<string>{iss}, std::istream_iterator<string>());
+        *addresses[i] = words[1];
+    }
+    float output = 100.0 * (1 - (stof(MemFree) / (stof(MemAvailable) - stof(Buffers))));
+    return output;
 }

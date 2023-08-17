@@ -66,10 +66,13 @@ int main(){
     cout << '\n';
 /////////////////
 
-    for (auto& i : ProcessParser::getSysCpuPercent("0"))
-        cout << i << " | ";
-    
-    
-    
+    // for (auto& i : ProcessParser::getSysCpuPercent("0"))
+    //     cout << i << " | ";
+
+/////////////////
+    cout << '\n';
+/////////////////
+
+    cout << "System Ram %: " << ProcessParser::getSysRamPercent() << endl;
     return 0;
 }
