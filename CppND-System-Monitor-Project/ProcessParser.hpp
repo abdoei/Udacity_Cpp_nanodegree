@@ -247,3 +247,16 @@ float ProcessParser::getSysIdleCpuTime(vector<string> values) {
     return (stof(values[S_IDLE]) + stof(values[S_IOWAIT]));
 }
 
+
+string ProcessParser::printCpuStats(vector<string> values1, vector<string> values2){
+/*
+Because CPU stats can be calculated only if you take measures in two different time,
+this function has two parameters: two vectors of relevant values.
+We use a formula to calculate overall activity of processor.
+*/
+    float activeTime = getSysActiveCpuTime(values2) - getSysActiveCpuTime(values1);
+    float idleTime = getSysIdleCpuTime(values2) - getSysIdleCpuTime(values1);
+    float totalTime = activeTime + idleTime;
+    float result = 100.0*(activeTime / totalTime);
+    return to_string(result);
+}
