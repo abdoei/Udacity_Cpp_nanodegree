@@ -1,5 +1,5 @@
-/* 
-// The required header files given by the course.
+/*
+The required header files given by the course.
 #include <algorithm> //
 #include <iostream> //
 #include <math.h>
@@ -20,7 +20,7 @@
 #include <unistd.h> //
 #include <constants.h> //
 */
-
+#pragma once
 #include <string>
 #include <vector>
 #include <sstream>
@@ -57,7 +57,7 @@ class ProcessParser {
         static int getTotalNumberOfProcesses();
         static int getNumberOfRunningProcesses();
         static string getOsName();
-        static std::string printCpuStats(std::vector<std::string> values1, std::vector<std::string>values2);
+        static std::string printCpuStats(std::vector<std::string> lastValues, std::vector<std::string>currentValues);
         static int getNumberOfCores();
         static float getSysActiveCpuTime(vector<string> values);
         static float getSysIdleCpuTime(vector<string> values);
@@ -76,7 +76,7 @@ vector<string> ProcessParser::getPidList(){
     vector<string> pidList;
     DIR* directory;
     dirent *entery;
-    
+
     directory = opendir(Path::basePath().c_str());
     if(directory){
         while ((entery = readdir(directory)))
@@ -122,14 +122,14 @@ string ProcessParser::getCpuPercent(string pid){
     cutime: user mode jiffies with child's
     cstime: kernel mode jiffies with child's
     start_time: time the process started after system boot
-    
+
     jiffies: An incrementing counter representing
-    system "uptime" in ticks - or the number of 
+    system "uptime" in ticks - or the number of
     timer interrupts since boot. Ultimately the
     entire original concept of a jiffy will likely
     vanish as systems use timer events only when
-    necessary and become "jiffyless". 
-    
+    necessary and become "jiffyless".
+
     */
     float sTime = stof(times[sTime_i]);
     float cuTime = stof(times[cuTime_i]);
@@ -211,17 +211,36 @@ int ProcessParser::getNumberOfCores(){
     return 0;
 }
 
-vector<string> ProcessParser::getSysCpuPercent(std::string coreNumber){
+// TODO: suggest a name chage
+vector<string> ProcessParser::getSysCpuPercent(std::string coreNumber = ""){
+    /*
+     *  The amount of time that the system ("cpu" line) or
+     *  the specific CPU ("cpuN" line) spent in various states like:
+     *  cpu  10132153 290696 3084719 46828483 16683 0 25195 0 175628 0
+     *  cpu0 1393280  32966  572056  13343292 6130  0 17875 0 23933  0
+     *
+     *  The meanings of the columns are as follows, from left to right:
+     *      user:    normal processes executing in user mode
+     *      nice:    niced processes executing in user mode
+     *      system:  processes executing in kernel mode
+     *      idle:    twiddling thumbs
+     *      iowait:  waiting for I/O to complete
+     *      irq:     servicing interrupts
+     *      softirq: servicing softirqs
+     *      steal:   time spent in other operating systems like virtualized environment
+     *      guest:   stolen time for guest OS under the control of the Linux kernel
+     *      guest_nice: Time spent running a niced guest
+     */
     string path = Path::basePath() + Path::statPath();
     ifstream stream = Util::getStream(path);
     string line;
     string searchString = "cpu" + coreNumber;
-    
+
     while (getline(stream, line))
     {
         if(line.compare(0, searchString.size(), searchString) == 0){
             istringstream iss{line};
-            vector<string> data(++(istream_iterator<std::string>{iss}),
+            vector<string> data(istream_iterator<std::string>{iss},
                                 istream_iterator<std::string>()); // skiping the first element
             return data;
         }
@@ -229,7 +248,7 @@ vector<string> ProcessParser::getSysCpuPercent(std::string coreNumber){
     return vector<string>();
 }
 
-// Values 1:3, 6:10 are active CPU time 
+// Values 1:3, 6:10 are active CPU time
 float ProcessParser::getSysActiveCpuTime(vector<string> values){
     return (stof(values[S_USER])    +
             stof(values[S_NICE])    +
@@ -246,15 +265,15 @@ float ProcessParser::getSysIdleCpuTime(vector<string> values) {
     return (stof(values[S_IDLE]) + stof(values[S_IOWAIT]));
 }
 
-// values1 and values2 are previous and current time. 
-string ProcessParser::printCpuStats(vector<string> values1, vector<string> values2){
+// lastValues and currentValues are previous and current time. // TODO: suggest a name change
+string ProcessParser::printCpuStats(vector<string> lastValues, vector<string> currentValues){
 /*
 Because CPU stats can be calculated only if you take measures in two different time,
 this function has two parameters: two vectors of relevant values.
 We use a formula to calculate overall activity of processor.
 */
-    float activeTime = getSysActiveCpuTime(values2) - getSysActiveCpuTime(values1);
-    float idleTime = getSysIdleCpuTime(values2) - getSysIdleCpuTime(values1);
+    float activeTime = getSysActiveCpuTime(currentValues) - getSysActiveCpuTime(lastValues);
+    float idleTime   = getSysIdleCpuTime(currentValues) - getSysIdleCpuTime(lastValues);
     float totalTime = activeTime + idleTime;
     float result = 100.0*(activeTime / totalTime);
     return to_string(result);
@@ -271,7 +290,7 @@ float ProcessParser::getSysRamPercent(){
         else if(line.compare(0, MemFree.size(), MemFree) == 0)      MemFree = line;
         else if(line.compare(0, Buffers.size(), Buffers) == 0)      Buffers = line;
     }
-    vector<string *> addresses {&MemAvailable, &MemFree, &Buffers}; 
+    vector<string *> addresses {&MemAvailable, &MemFree, &Buffers};
     for (short i = 0; i < 3; ++i){
         istringstream iss(*addresses[i]);
         vector<string> words(istream_iterator<string>{iss}, istream_iterator<string>());

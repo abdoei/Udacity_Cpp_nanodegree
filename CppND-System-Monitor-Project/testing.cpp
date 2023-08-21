@@ -1,109 +1,137 @@
 #include "util.hpp"
-#include <iostream>
-#include <sstream>
+#include <gtest/gtest.h>
+#include "SysInfo.hpp"
 #include "ProcessParser.hpp"
 
-using namespace std;
-
-int main(){
-    // constants.hpp
-    // cout << Util::convertToTime(1000) << endl;
-    // cout << Util::getProgressBar("50") << endl;
-
-/////////////////
-    cout << '\n';
-/////////////////
-
-    auto myfile = Util::getStream("testing.cpp");
-    if (myfile)
-    {
-        string line;
-        // while (getline(myfile, line)) cout << line << endl;
+namespace {
+    TEST(constantsTest, convertToTime) {
+        EXPECT_THROW(Util::convertToTime(-1), std::runtime_error);
+        EXPECT_EQ(Util::convertToTime(    0), "0:0:0");
+        EXPECT_EQ(Util::convertToTime(    1), "0:0:1");
+        EXPECT_EQ(Util::convertToTime(   60), "0:1:0");
+        EXPECT_EQ(Util::convertToTime( 3600), "1:0:0");
+        EXPECT_EQ(Util::convertToTime( 3661), "1:1:1");
+        EXPECT_EQ(Util::convertToTime(86400), "24:0:0");
     }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(constantsTest, getProgressBar) {
+        EXPECT_EQ(Util::getProgressBar( "-1"), "0% |                                                  -1 /100%");
+        EXPECT_EQ(Util::getProgressBar(  "0"), "0% |                                                  0 /100%");
+        EXPECT_EQ(Util::getProgressBar( "50"), "0% ||||||||||||||||||||||||||                         50 /100%");
+        EXPECT_EQ(Util::getProgressBar("100"), "0% |||||||||||||||||||||||||||||||||||||||||||||||||| 100 /100%");
+        EXPECT_EQ(Util::getProgressBar("101"), "0% |||||||||||||||||||||||||||||||||||||||||||||||||| 101 /100%");
+    }
 
-    // ProcessParser.hpp
-    // cout << ProcessParser::getCmd("1660") << endl;
-    // this happens to be valid [when running on my machine] and gives "/usr/libexec/gvfs-udisks2-volume-monitor"
+    TEST(constantsTest, getStream) {
+        EXPECT_THROW(Util::getStream("nonexistentfile"), std::runtime_error);
+        EXPECT_NO_THROW(Util::getStream("testing.cpp"));
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(processParserTest, getCmd) {
+        EXPECT_THROW(ProcessParser::getCmd("-1"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getCmd("0"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getCmd("nonexistentprocess"), std::runtime_error);
+        EXPECT_STREQ(ProcessParser::getCmd("1").c_str(), "/sbin/init");
+    }
 
-    vector<string> processes = ProcessParser::getPidList();
-    // for (string proc : processes)
-    //     cout << proc << " | ";
+    TEST(processParserTest, getPidList) {
+        EXPECT_NO_THROW(ProcessParser::getPidList());
+        EXPECT_EQ(ProcessParser::getPidList().size() > 0, true);
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(processParserTest, getVmSize) {
+        EXPECT_THROW(ProcessParser::getVmSize("-1"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getVmSize("0"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getVmSize("nonexistentprocess"), std::runtime_error);
+        EXPECT_EQ(stof(ProcessParser::getVmSize("1")) > 0.0, true);
+    }
 
-    int pNum = 2144;
-    // cout << "Process No." << to_string(pNum) << " got a RAM usage of " << ProcessParser::getVmSize(to_string(pNum)) << " GBytes" << endl; 
+    TEST(processParserTest, getCpuPercent) {
+        EXPECT_THROW(ProcessParser::getCpuPercent("-1"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getCpuPercent("0"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getCpuPercent("nonexistentprocess"), std::runtime_error);
+        EXPECT_EQ(stof(ProcessParser::getCpuPercent("1")) > 0.0, true);
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(ProcessParserTest, getProcUser) {
+        EXPECT_THROW(ProcessParser::getProcUser("-1"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getProcUser("0"), std::runtime_error);
+        EXPECT_THROW(ProcessParser::getProcUser("nonexistentprocess"), std::runtime_error);
+        EXPECT_STREQ(ProcessParser::getProcUser("1").c_str(), "root");
+    }
 
-    // cout << "Process No." << to_string(pNum) << " uses " << ProcessParser::getCpuPercent(to_string(pNum)) << "\% of the cpu power";
+    TEST(ProcessParserTest, getNumberOfCores) {
+        EXPECT_NO_THROW(ProcessParser::getNumberOfCores());
+        EXPECT_EQ(ProcessParser::getNumberOfCores() >= 1, true);
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(ProcessParserTest, getSysCpuPercent) {
+        EXPECT_NO_THROW(ProcessParser::getSysCpuPercent("0"));
+        EXPECT_EQ(stoi(ProcessParser::getSysCpuPercent()[1]) > 1, true);
+    }
 
-    // cout << "Process No." << to_string(pNum) << " belongs to user: " << ProcessParser::getProcUser(to_string(pNum)) << endl;
+    TEST(ProcessParserTest, getSysRamPercent) {
+        EXPECT_NO_THROW(ProcessParser::getSysRamPercent());
+        EXPECT_EQ(ProcessParser::getSysRamPercent() > 0.0, true);
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(ProcessParserTest, getSysKernelVersion) {
+        EXPECT_NO_THROW(ProcessParser::getSysKernelVersion());
+        EXPECT_EQ(ProcessParser::getSysKernelVersion().size() > 0, true);
+    }
 
-    // cout << "No. of cores = " << ProcessParser::getNumberOfCores()<< endl;
+    TEST(ProcessParserTest, getOsName) {
+        EXPECT_NO_THROW(ProcessParser::getOsName());
+        EXPECT_EQ(ProcessParser::getOsName().size() > 0, true);
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(ProcessParserTest, getTotalThreads) {
+        EXPECT_NO_THROW(ProcessParser::getTotalThreads());
+        EXPECT_EQ(ProcessParser::getTotalThreads() > 0, true);
+    }
 
-    // for (auto& i : ProcessParser::getSysCpuPercent("0"))
-    //     cout << i << " | ";
+    TEST(ProcessParserTest, getTotalNumberOfProcesses) {
+        EXPECT_NO_THROW(ProcessParser::getTotalNumberOfProcesses());
+        EXPECT_EQ(ProcessParser::getTotalNumberOfProcesses() > 0, true);
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(ProcessParserTest, getNumberOfRunningProcesses) {
+        EXPECT_NO_THROW(ProcessParser::getNumberOfRunningProcesses());
+        EXPECT_EQ(ProcessParser::getNumberOfRunningProcesses() > 0, true);
+    }
 
-    // cout << "System Ram %: " << ProcessParser::getSysRamPercent() << endl;
+    TEST(SysInfoTest, getters) {
+        SysInfo system;
+        EXPECT_NO_THROW(system.getUpTime());
+        EXPECT_EQ(system.getUpTime() > 0, true);
+        EXPECT_NO_THROW(system.getOsName());
+        EXPECT_EQ(system.getOsName().size() > 0, true);
+        EXPECT_NO_THROW(system.getKernelVersion());
+        EXPECT_EQ(system.getKernelVersion().size() > 0, true);
+        EXPECT_NO_THROW(system.getCpuPercent());
+        EXPECT_EQ(stof(system.getCpuPercent()) > 0.0, true);
+        EXPECT_NO_THROW(system.getTotalProc());
+        EXPECT_EQ(stof(system.getTotalProc()) > 0, true);
+        EXPECT_NO_THROW(system.getRunningProc());
+        EXPECT_EQ(stof(system.getRunningProc()) > 0, true);
+        EXPECT_NO_THROW(system.getThreads());
+        EXPECT_EQ(stof(system.getThreads()) > 0, true);
+        EXPECT_NO_THROW(system.getMemPercent());
+        EXPECT_EQ(stof(system.getMemPercent()) > 0.0, true);
+        EXPECT_NO_THROW(system.getCoresStats());
+        EXPECT_EQ(system.getCoresStats().size() > 0, true);
+        EXPECT_NO_THROW(system.getOtherCores(ProcessParser::getNumberOfCores()));
+    }
 
-/////////////////
-    cout << '\n';
-/////////////////
+    TEST(SysInfoTest, setters) {
+        SysInfo system;
+        EXPECT_NO_THROW(system.setLastCpuMeasures());
+        EXPECT_NO_THROW(system.setAttributes());
+        EXPECT_NO_THROW(system.setCpuCoresStats());
+    }
 
-    cout << "System kernel version: " << ProcessParser::getSysKernelVersion() << endl;
-
-/////////////////
-    cout << '\n';
-/////////////////
-
-    cout << "System name: " << ProcessParser::getOsName() << endl;
-
-/////////////////
-    cout << '\n';
-/////////////////
-
-    cout << "Total threads number: " << ProcessParser::getTotalThreads() << endl;
-
-/////////////////
-    cout << '\n';
-/////////////////
-
-    cout << "Total processes number: " << ProcessParser::getTotalNumberOfProcesses() << endl;
-
-/////////////////
-    cout << '\n';
-/////////////////
-
-    cout << "Total running processes number: " << ProcessParser::getNumberOfRunningProcesses() << endl;
-
-    return 0;
+} // namespace
+int main(int argc, char **argv){
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

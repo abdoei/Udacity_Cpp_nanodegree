@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <fstream>
 
@@ -13,6 +14,7 @@ class Util final {
 
 string Util::convertToTime (long input_seconds)
 {
+    if(input_seconds < 0) throw std::runtime_error("Negative system time");
     long minutes = input_seconds / 60;
     long hours = minutes / 60;
     long seconds = int(input_seconds%60);
@@ -30,7 +32,7 @@ string Util::getProgressBar(string percent)
     int _size= 50;
     int  boundaries = (stof(percent)/100)*_size;
 
-    for (int i=0;i<_size;i++) {
+    for (int i=0;i<_size;++i) {
         if (i<=boundaries) result +="|";
         else               result +=" ";
     }
