@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 #include "SysInfo.hpp"
 #include "ProcessParser.hpp"
+#include "Process.hpp"
 
 namespace {
     TEST(constantsTest, convertToTime) {
@@ -128,6 +129,30 @@ namespace {
         EXPECT_NO_THROW(system.setLastCpuMeasures());
         EXPECT_NO_THROW(system.setAttributes());
         EXPECT_NO_THROW(system.setCpuCoresStats());
+    }
+
+    TEST(ProcessTest, getters) {
+        Process process("1");
+        EXPECT_NO_THROW(process.getProcess());
+        EXPECT_EQ(process.getProcess().size() > 0, true);
+        EXPECT_NO_THROW(process.getPid());
+        EXPECT_EQ(stoi(process.getPid()), 1);
+        EXPECT_NO_THROW(process.getUser());
+        EXPECT_EQ(process.getUser(), "root");
+        EXPECT_NO_THROW(process.getCmd());
+        EXPECT_EQ(process.getCmd().size() > 0, true);
+        EXPECT_NO_THROW(process.getCpu());
+        EXPECT_EQ(process.getCpu() > 0.0, true);
+        EXPECT_NO_THROW(process.getMem());
+        EXPECT_EQ(process.getMem() > 0.0, true);
+        EXPECT_NO_THROW(process.getUpTime());
+        EXPECT_EQ(process.getUpTime().size() > 0, true);
+    }
+
+    TEST(ProcessTest, formatCMDTest){
+        Process process("1");
+        EXPECT_NO_THROW(process.formatCMD("/path/to/a/very/long/command/that/should/be/truncated"));
+        EXPECT_EQ(process.formatCMD("/home/abdoeid/miniconda3/x86_64-conda_cos7-linux-gnu/bin"), "/home/abdoeid/miniconda3/x86_64-con/bin");
     }
 
 } // namespace

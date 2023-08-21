@@ -33,6 +33,7 @@ The required header files given by the course.
 #include <iostream>
 #include <iterator>
 #include <unistd.h>
+#include "util.hpp"
 
 using std::string;
 using std::vector;
