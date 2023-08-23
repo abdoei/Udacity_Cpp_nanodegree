@@ -28,7 +28,7 @@ jobs:
       - name: Create build directory
         run: |
           cd CppND-System-Monitor-Project
-          md build
+          mkdir build
 
       - name: Run cmake
         run: |
