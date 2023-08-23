@@ -21,10 +21,10 @@ jobs:
 
       - name: Build project
         run: |
-          cd build
+          cd Udacity_Cpp_nanodegree/CppND-System-Monitor-Project/build
           make
 
       - name: Run tests
         run: |
-          cd build
+          cd Udacity_Cpp_nanodegree/CppND-System-Monitor-Project/build
           make test
