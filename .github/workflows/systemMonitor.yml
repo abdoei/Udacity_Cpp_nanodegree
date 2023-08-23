@@ -27,15 +27,15 @@ jobs:
 
       - name: Run cmake
         run: |
-          cd /CppND-System-Monitor-Project/build
+          cd CppND-System-Monitor-Project/build
           cmake ..
 
       - name: Build project
         run: |
-          cd /CppND-System-Monitor-Project/build
+          cd CppND-System-Monitor-Project/build
           make
 
       - name: Run tests
         run: |
-          cd /CppND-System-Monitor-Project/build
+          cd CppND-System-Monitor-Project/build
           make test
