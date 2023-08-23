@@ -1,8 +1,8 @@
-#include "util.hpp"
+#include "../src/util.hpp"
 #include <gtest/gtest.h>
-#include "SysInfo.hpp"
-#include "ProcessParser.hpp"
-#include "Process.hpp"
+#include "../src/SysInfo.hpp"
+#include "../src/ProcessParser.hpp"
+#include "../src/Process.hpp"
 
 namespace {
     TEST(constantsTest, convertToTime) {
@@ -25,7 +25,7 @@ namespace {
 
     TEST(constantsTest, getStream) {
         EXPECT_THROW(Util::getStream("nonexistentfile"), std::runtime_error);
-        EXPECT_NO_THROW(Util::getStream("testing.cpp"));
+        EXPECT_NO_THROW(Util::getStream("Makefile"));
     }
 
     TEST(processParserTest, getCmd) {
