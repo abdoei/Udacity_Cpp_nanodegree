@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/SystemMonitor.dir/main.cpp.o -o SystemMonitor 

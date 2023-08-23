@@ -25,6 +25,11 @@ jobs:
       - name: Add CMake to system path
         run: echo "export PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
 
+      - name: Run cmake
+        run: |
+          cd CppND-System-Monitor-Project/build
+          cmake ..
+
       - name: Build project
         run: |
           cd CppND-System-Monitor-Project/build
