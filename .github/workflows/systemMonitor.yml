@@ -19,6 +19,12 @@ jobs:
       - name: Setup C++ environment
         uses: kurocha/setup-cpp@v1
 
+      - name: Install CMake
+        run: sudo apt-get install cmake
+
+      - name: Add CMake to system path
+        run: echo "export PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
+
       - name: Build project
         run: |
           cd CppND-System-Monitor-Project/build
