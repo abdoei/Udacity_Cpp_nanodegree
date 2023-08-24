@@ -40,6 +40,6 @@ jobs:
 
       - name: Run tests
         run: |
-          cd CppND-System-Monitor-Project/build/test
-          make test --rerun-failed --output-on-failure
-          cat /home/runner/work/Udacity_Cpp_nanodegree/Udacity_Cpp_nanodegree/CppND-System-Monitor-Project/build/test/Testing/Temporary/LastTest.log
+          # cd CppND-System-Monitor-Project/build/test
+          # make test
+          ./CppND-System-Monitor-Project/build/test/MyTests
