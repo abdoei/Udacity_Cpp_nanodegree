@@ -70,6 +70,7 @@ string Process::formatCMD(string cmd) {
         int indeces[20]; // to store the indeces of the / in the cmd string
         int count = 0;
         for(int i = 0; i < cmd.size(); ++i){ if(cmd[i] == '/') indeces[count++] = i;}
+        if(count == 0) return cmd;
         string formattedCMD = "/";
         int itemSpace = (cmd.size() - count) / count;
         for(int i = 1; i < count+1 ; ++i){

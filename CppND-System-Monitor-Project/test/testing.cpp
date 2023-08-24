@@ -1,8 +1,9 @@
-#include "../src/util.hpp"
 #include <gtest/gtest.h>
+#include "../src/util.hpp"
 #include "../src/SysInfo.hpp"
 #include "../src/ProcessParser.hpp"
 #include "../src/Process.hpp"
+#include "../src/ProcessesContainer.hpp"
 
 namespace {
     TEST(constantsTest, convertToTime) {
@@ -153,6 +154,13 @@ namespace {
         Process process("1");
         EXPECT_NO_THROW(process.formatCMD("/path/to/a/very/long/command/that/should/be/truncated"));
         EXPECT_EQ(process.formatCMD("/home/abdoeid/miniconda3/x86_64-conda_cos7-linux-gnu/bin"), "/home/abdoeid/miniconda3/x86_64-con/bin");
+    }
+
+    TEST(ProcessesContainerTest, refreshListTest) {
+        ProcessesContainer container;
+        EXPECT_NO_THROW(container.refreshList());
+        EXPECT_EQ(container.getList().size() > 0, true);
+        EXPECT_EQ(container.printList().size() > 0, true);
     }
 
 } // namespace
