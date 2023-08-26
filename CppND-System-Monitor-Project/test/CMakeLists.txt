@@ -15,4 +15,4 @@ target_link_libraries(MyTests gtest gtest_main pthread)
 option(BUILD_TESTING "Build tests" ON)
 
 # add a test for the MyTests executable
-add_test(NAME MyTest COMMAND MyTests)
+add_test(NAME MyTest COMMAND "${CMAKE_SOURCE_DIR}/bin/MyTests")
