@@ -41,4 +41,4 @@ jobs:
       - name: Run tests
         run: |
           # cd CppND-System-Monitor-Project/build/test
-          make test ./CppND-System-Monitor-Project/build/test/MyTests
+          make MyTests
