@@ -19,7 +19,10 @@ string Util::convertToTime (long input_seconds)
     long hours = minutes / 60;
     long seconds = int(input_seconds%60);
     minutes = int(minutes%60);
-    string result = std::to_string(hours) + ":" + std::to_string(minutes) + ":" + std::to_string(seconds);
+    long days = hours / 24;
+    hours = hours % 24;
+    string result = std::to_string(days) + " days, " + std::to_string(hours) +
+                    ":" + std::to_string(minutes) + ":" + std::to_string(seconds);
     return result;
 }
 

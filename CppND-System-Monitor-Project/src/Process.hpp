@@ -24,6 +24,7 @@ public:
         this->cpu = ProcessParser::getCpuPercent(pid);
     }
     string getPid() const;
+    string formatString(std::string str, int len);
     string getUser() const;
     string getCmd() const;
     float getCpu() const;
@@ -41,6 +42,11 @@ string Process::getPid() const{
 return this->pid;
 }
 
+string Process::formatString(std::string str, int len) {
+    str += "            ";
+    return str.substr(0, len) + "  ";
+}
+
 string Process::getProcess(){
 // to return the process attributes in a single string
 
@@ -50,17 +56,12 @@ string Process::getProcess(){
     this->cpu = ProcessParser::getCpuPercent(this->pid);
 
     // then we can return the process attributes in a single string
-    return (this->pid + "   "
-            + this->user
-            + "   "
-            + this->mem.substr(0,5)
-            + "     "
-            + this->cpu.substr(0,5)
-            + "     "
-            + this->upTime.substr(0,5)
-            + "    "
-            + formatCMD( this->cmd)
-            );
+    return (formatString(this->pid, 8) +
+            formatString(this->user, 8) +
+            formatString(this->cpu.substr(0, 5), 7) +
+            formatString(this->mem.substr(0, 5), 7) +
+            formatString(this->upTime.substr(0, 5), 7) +
+            formatCMD(this->cmd));
 }
 
 string Process::formatCMD(string cmd) {

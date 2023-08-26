@@ -106,7 +106,8 @@ string ProcessParser::getVmSize(string pid){
             return std::to_string(std::stoi(strVmSize) / 1024.0 / 1024.0 );
         }
     }
-    return string("-1");
+    float zero = 0.0;
+    return to_string(zero);
 }
 
 string ProcessParser::getCpuPercent(string pid){
@@ -137,14 +138,13 @@ string ProcessParser::getCpuPercent(string pid){
     float csTime = stof(times[csTime_i]);
     float startTime = stof(times[startTime_i]);
     float freq = sysconf(_SC_CLK_TCK);
-    // not imp
     float uTime = stof(ProcessParser::getProcUpTime(pid));
     float upTime = ProcessParser::getSysUpTime();
 
     // calculations
     float total_time = uTime + sTime + cuTime + csTime;
     float seconds = upTime - (startTime / freq); // time elapsed from the begining of the process to now
-    float result = 100.0*((total_time / freq) / seconds);
+    float result = abs(100.0*((total_time / freq) / seconds));
     return to_string(result);
 }
 

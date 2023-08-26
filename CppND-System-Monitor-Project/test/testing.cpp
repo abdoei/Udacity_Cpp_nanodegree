@@ -5,15 +5,15 @@
 #include "../src/Process.hpp"
 #include "../src/ProcessesContainer.hpp"
 
-namespace {
+// namespace {
     TEST(constantsTest, convertToTime) {
         EXPECT_THROW(Util::convertToTime(-1), std::runtime_error);
-        EXPECT_EQ(Util::convertToTime(    0), "0:0:0");
-        EXPECT_EQ(Util::convertToTime(    1), "0:0:1");
-        EXPECT_EQ(Util::convertToTime(   60), "0:1:0");
-        EXPECT_EQ(Util::convertToTime( 3600), "1:0:0");
-        EXPECT_EQ(Util::convertToTime( 3661), "1:1:1");
-        EXPECT_EQ(Util::convertToTime(86400), "24:0:0");
+        EXPECT_EQ(Util::convertToTime(0),     "0 days, 0:0:0");
+        EXPECT_EQ(Util::convertToTime(1),     "0 days, 0:0:1");
+        EXPECT_EQ(Util::convertToTime(60),    "0 days, 0:1:0");
+        EXPECT_EQ(Util::convertToTime(3600),  "0 days, 1:0:0");
+        EXPECT_EQ(Util::convertToTime(3661),  "0 days, 1:1:1");
+        EXPECT_EQ(Util::convertToTime(86400), "1 days, 0:0:0");
     }
 
     TEST(constantsTest, getProgressBar) {
@@ -163,7 +163,14 @@ namespace {
         EXPECT_EQ(container.printList().size() > 0, true);
     }
 
-} // namespace
+    TEST(ProcessTest, formatStringTest){
+        std::string str = "String to be truncated :)";
+        Process proc("1");
+        EXPECT_EQ(proc.formatString(str, 15).size(), 17); // As it addes extra two ws at the end
+        EXPECT_EQ(proc.formatString(str, 30).size(), 32);
+    }
+
+// } // namespace
 int main(int argc, char **argv){
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

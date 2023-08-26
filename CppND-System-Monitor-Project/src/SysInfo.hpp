@@ -81,7 +81,7 @@ vector<string> SysInfo::getCoresStats() const {
     */
     vector<string> stats;
     for (int i = 0; i < (this->cpuCoresStats.size()); ++i) {
-        string line = "cpu" + to_string(i) + ": " + Util::getProgressBar(this->cpuCoresStats[i]);
+        string line = "cpu" + to_string(i) + ":   " + Util::getProgressBar(this->cpuCoresStats[i]);
         stats.emplace_back(line);
     }
     return stats;
