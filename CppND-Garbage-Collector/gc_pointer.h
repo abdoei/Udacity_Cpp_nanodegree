@@ -110,9 +110,11 @@ Pointer<T,size>::Pointer(T *t){
 
     addr = t;
     arraySize = size;
-    // refContainer[] TODO:stopped here to figure out how to ++ the refcounter
+    // refContainer[] TODO: DELETE: found findPtrInfo function
+    auto p = findPtrInfo(t);
+    if(p != refContainer.end()) p->refcount++;
+    else{ refContainer.emplace_back(PtrDetails(t, size));}
     isArray = s; // if s == 0 then isArray = false
-
 }
 // Copy constructor.
 template< class T, int size>
