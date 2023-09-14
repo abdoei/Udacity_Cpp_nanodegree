@@ -102,35 +102,27 @@ bool Pointer<T, size>::first = true;
 
 // Constructor for both initialized and uninitialized objects. -> see class interface
 template<class T,int size>
-Pointer<T,size>::Pointer(T *t){
+Pointer<T,size>::Pointer(T *t) : addr(t), arraySize(size), isArray(size) {
     // Register shutdown() as an exit function.
     if (first)
         atexit(shutdown);
     first = false;
-
-    addr = t;
-    arraySize = size;
-    // refContainer[] TODO: DELETE: found findPtrInfo function
     auto p = findPtrInfo(t);
-    if(p != refContainer.end()) p->refcount++;
+    if(p != refContainer.end()) p->refCount++;
     else{ refContainer.emplace_back(PtrDetails(t, size));}
-    isArray = s; // if s == 0 then isArray = false
 }
 // Copy constructor.
 template< class T, int size>
-Pointer<T,size>::Pointer(const Pointer &ob){
-
-    // TODO: Implement Pointer constructor
-    // Lab: Smart Pointer Project Lab
-
+Pointer<T,size>::Pointer(const Pointer &ob) : addr(ob.addr), isArray(ob.isArray), arraySize(ob.arraySize){
+    findPtrInfo(ptr)->refCount++;
 }
 
 // Destructor for Pointer.
 template <class T, int size>
 Pointer<T, size>::~Pointer(){
-
-    // TODO: Implement Pointer destructor
-    // Lab: New and Delete Project Lab
+    findPtrInfo(ptr)->refCount--;
+    // clean the refContainer from the unused pointers
+    collect();
 }
 
 // Collect garbage. Returns true if at least
