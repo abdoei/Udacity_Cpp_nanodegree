@@ -16,7 +16,7 @@ template <class T, int size = 0>
 class Pointer{
 private:
     // refContainer maintains the garbage collection list.
-    static std::list<PtrDetails<T> > refContainer;
+    static std::list<PtrDetails<T>> refContainer; // PS: it's a static member for a reason
     // addr points to the allocated memory to which
     // this Pointer pointer currently points.
     T *addr;
@@ -31,7 +31,8 @@ private:
     unsigned arraySize; // size of the array
     static bool first; // true when first Pointer is created
     // Return an iterator to pointer details in refContainer.
-    typename std::list<PtrDetails<T> >::iterator findPtrInfo(T *ptr);
+    // typename is used to tell the compiler that std::list<PtrDetails<T>>::iterator is a type
+    typename std::list<PtrDetails<T>>::iterator findPtrInfo(T *ptr);
 public:
     // Define an iterator type for Pointer<T>.
     typedef Iter<T> GCiterator;
@@ -50,21 +51,21 @@ public:
     // one object was freed.
     static bool collect();
     // Overload assignment of pointer to Pointer.
-    T *operator=(T *t);
+    T *operator=(T *t); // this is to allow method chaining like p1 = p2 = new int;
     // Overload assignment of Pointer to Pointer.
     Pointer &operator=(Pointer &rv);
     // Return a reference to the object pointed
     // to by this Pointer.
     T &operator*(){
         return *addr;
-    }
+    } // to dereference the Pointer and access the element
     // Return the address being pointed to.
-    T *operator->() { return addr; }
+    T *operator->() { return addr; } // to enable using member fuctions of T using -> directly on a Pointer
     // Return a reference to the object at the
     // index specified by i.
     T &operator[](int i){ return addr[i];}
     // Conversion function to T *.
-    operator T *() { return addr; }
+    operator T *() { return addr; } // to enable sth like int* x = Pointer<int>();
     // Return an Iter to the start of the allocated memory.
     Iter<T> begin(){
         int _size;
@@ -93,8 +94,9 @@ public:
 
 // STATIC INITIALIZATION
 // Creates storage for the static variables
+// By doing this the the Pointer class ensures that the garbage collector is properly initialized before any Pointer objects are created. This allows the garbage collector to track all Pointer objects, regardless of when they were created.
 template <class T, int size>
-std::list<PtrDetails<T> > Pointer<T, size>::refContainer;
+std::list<PtrDetails<T>> Pointer<T, size>::refContainer;
 template <class T, int size>
 bool Pointer<T, size>::first = true;
 
@@ -106,8 +108,10 @@ Pointer<T,size>::Pointer(T *t){
         atexit(shutdown);
     first = false;
 
-    // TODO: Implement Pointer constructor
-    // Lab: Smart Pointer Project Lab
+    addr = t;
+    arraySize = size;
+    // refContainer[] TODO:stopped here to figure out how to ++ the refcounter
+    isArray = s; // if s == 0 then isArray = false
 
 }
 // Copy constructor.

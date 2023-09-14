@@ -2,9 +2,11 @@
 // use an Iter that exceeds the range of the
 // underlying object.
 //
-class OutOfRangeExc
-{
+class OutOfRangeExc{
     // Add functionality if needed by your application.
+    OutOfRangeExc() {
+        std::cout << "Attempted Access is Out of Range" << std::endl;
+    }
 };
 
 
@@ -18,26 +20,18 @@ class OutOfRangeExc
 template <class T>
 class Iter
 {
-    T *ptr;
     // current pointer value
-    T *end;
+    T *ptr;
     // points to element one past end
-
-    T *begin;        // points to start of allocated array
-    unsigned length; // length of sequence
-  public:
-    Iter()
-    {
-        ptr = end = begin = NULL;
-        length = 0;
-    }
-    Iter(T *p, T *first, T *last)
-    {
-        ptr = p;
-        end = last;
-        begin = first;
-        length = last - first;
-    }
+    T *end;
+    // points to start of allocated array
+    T *begin;
+    // length of sequence (size)
+    unsigned length;
+public:
+    Iter() : ptr(NULL), end(NULL), begin(NULL), length(0) {}
+    Iter(T *p, T *first, T *last) : ptr(p), end(last),
+                                    begin(first), length(last - first) {}
     // Return length of sequence to which this
     // Iter points.
     unsigned size() { return length; }
@@ -57,7 +51,7 @@ class Iter
             throw OutOfRangeExc();
         return ptr;
     }
-    // Prefix ++.
+    // Prefix ++. ++It
     Iter operator++()
     {
         ptr++;
@@ -70,7 +64,7 @@ class Iter
         return *this;
     }
     // Postfix ++.
-    Iter operator++(int notused)
+    Iter operator++(int notused) // notused, unused or dummy is to diff bet ++it and it++
     {
         T *tmp = ptr;
         ptr++;
