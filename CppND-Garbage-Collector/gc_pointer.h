@@ -161,6 +161,7 @@ T *Pointer<T, size>::operator=(T *t){
         refContainer.emplace_front(newInstance);
     }
     addr = t;
+    isArray = arraySize = size;
     return t;
 }
 // Overload assignment of Pointer to Pointer.
@@ -171,6 +172,8 @@ Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
     p = findPtrInfo(rv.addr);
     p->refCount++;
     addr = rv.addr;
+    isArray = rv.isArray;
+    arraySize = rv.arraySize;
     return rv;
 }
 
