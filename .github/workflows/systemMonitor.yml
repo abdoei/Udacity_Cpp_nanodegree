@@ -9,7 +9,41 @@ on:
       - main
 
 jobs:
-  build-and-test:
+  # build-and-test-SystemMonitor:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
+
+  #     - name: Setup C++ environment
+  #       uses: kurocha/setup-cpp@v1
+
+  #     - name: Install dependencies
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install -y build-essential cmake libgtest-dev
+
+  #     - name: Add CMake to system path
+  #       run: echo "export PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
+
+  #     - name: Create build directory
+  #       run: |
+  #         cd CppND-System-Monitor-Project
+  #         mkdir build
+
+  #     - name: Run cmake then make
+  #       run: |
+  #         cd CppND-System-Monitor-Project/build
+  #         cmake ..
+  #         make
+
+  #     - name: Run tests
+  #       run: |
+  #         # cd CppND-System-Monitor-Project/build/test
+  #         make test ./CppND-System-Monitor-Project/build/test/MyTests
+
+  build-and-test-Garbage-Collector:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,26 +53,12 @@ jobs:
       - name: Setup C++ environment
         uses: kurocha/setup-cpp@v1
 
-      - name: Install dependencies
+      - name: Build the project
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake libgtest-dev
+          cd CppND-Garbage-Collector
+          g++ -o main main.cpp
 
-      - name: Add CMake to system path
-        run: echo "export PATH=/usr/local/bin:$PATH" >> $GITHUB_ENV
-
-      - name: Create build directory
+      - name: Run the project
         run: |
-          cd CppND-System-Monitor-Project
-          mkdir build
-
-      - name: Run cmake then make
-        run: |
-          cd CppND-System-Monitor-Project/build
-          cmake ..
-          make
-
-      - name: Run tests
-        run: |
-          # cd CppND-System-Monitor-Project/build/test
-          make test ./CppND-System-Monitor-Project/build/test/MyTests
+          cd CppND-Garbage-Collector
+          ./main
