@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <list>
 #include <typeinfo>
@@ -114,13 +115,13 @@ Pointer<T,size>::Pointer(T *t) : addr(t), arraySize(size), isArray(size) {
 // Copy constructor.
 template< class T, int size>
 Pointer<T,size>::Pointer(const Pointer &ob) : addr(ob.addr), isArray(ob.isArray), arraySize(ob.arraySize){
-    findPtrInfo(ptr)->refCount++;
+    findPtrInfo(ob.addr)->refCount++;
 }
 
 // Destructor for Pointer.
 template <class T, int size>
 Pointer<T, size>::~Pointer(){
-    findPtrInfo(ptr)->refCount--;
+    findPtrInfo(addr)->refCount--;
     // clean the refContainer from the unused pointers
     collect();
 }
@@ -129,20 +130,19 @@ Pointer<T, size>::~Pointer(){
 // one object was freed.
 template <class T, int size>
 bool Pointer<T, size>::collect(){
-    // TODO: Implement collect function
-    // LAB: New and Delete Project Lab
     // Note: collect() will be called in the destructor
     bool freedAnyMem = false;
     auto it = refContainer.begin();
-    for(;it != refContainer.end();it++){
-        if(it->refCount > 0) continue;
-
-        freedAnyMem = true;
-        refContainer.remove(*p);
-
-        if (p->isArray) delete[] p->memPtr;
-        else            delete   p->memPtr;
-        break;
+    while (it != refContainer.end()){
+        for(it = refContainer.begin();it != refContainer.end();it++){
+            if(it->refCount > 0) continue;
+            freedAnyMem = true;
+            refContainer.remove(*it);
+            if (it->isArray) delete[] it->memPtr;
+            else             delete   it->memPtr;
+            break;
+        }
+        // refresh the search
     }
     return freedAnyMem;
 }
@@ -161,8 +161,6 @@ T *Pointer<T, size>::operator=(T *t){
         refContainer.emplace_front(newInstance);
     }
     addr = t;
-    // TODO: change the implementation of the collect function to collect the data released here
-
     return t;
 }
 // Overload assignment of Pointer to Pointer.
@@ -218,7 +216,7 @@ void Pointer<T, size>::shutdown(){
     for (p = refContainer.begin(); p != refContainer.end(); p++)
     {
         // Set all reference counts to zero
-        p->refcount = 0;
+        p->refCount = 0;
     }
     collect();
 }

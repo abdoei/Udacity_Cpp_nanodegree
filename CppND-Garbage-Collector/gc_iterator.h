@@ -1,3 +1,4 @@
+#pragma once
 // Exception thrown when an attempt is made to
 // use an Iter that exceeds the range of the
 // underlying object.
