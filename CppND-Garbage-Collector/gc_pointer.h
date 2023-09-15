@@ -109,7 +109,7 @@ Pointer<T,size>::Pointer(T *t) : addr(t), arraySize(size), isArray(size) {
     first = false;
     auto p = findPtrInfo(t);
     if(p != refContainer.end()) p->refCount++;
-    else{ refContainer.emplace_back(PtrDetails(t, size));}
+    else{ refContainer.emplace_front(PtrDetails(t, size));}
 }
 // Copy constructor.
 template< class T, int size>
@@ -150,18 +150,30 @@ bool Pointer<T, size>::collect(){
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
 T *Pointer<T, size>::operator=(T *t){
+    //decrement the refCount of the current instance of pointer
+    auto p = findPtrInfo(addr);
+    p->refCount--;
+    //find if the newly assigned is in the refContainer
+    p = findPtrInfo(t);
+    if(p != refContainer.end()) p->refCount++;
+    else{
+        PtrDetails<T>newInstance(t, size);
+        refContainer.emplace_front(newInstance);
+    }
+    addr = t;
+    // TODO: change the implementation of the collect function to collect the data released here
 
-    // TODO: Implement operator==
-    // LAB: Smart Pointer Project Lab
-
+    return t;
 }
 // Overload assignment of Pointer to Pointer.
 template <class T, int size>
 Pointer<T, size> &Pointer<T, size>::operator=(Pointer &rv){
-
-    // TODO: Implement operator==
-    // LAB: Smart Pointer Project Lab
-
+    auto p = findPtrInfo(addr);
+    p->refCount--;
+    p = findPtrInfo(rv.addr);
+    p->refCount++;
+    addr = rv.addr;
+    return rv;
 }
 
 // A utility function that displays refContainer.
